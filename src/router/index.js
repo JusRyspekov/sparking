@@ -8,6 +8,7 @@ import ForgetVerifyCode from '../views/auth/forgot_password/VerifyCode.vue'
 import TimeTracker from '../views/TimeTracker.vue'
 import Profile from '../views/Profile.vue'
 import Contact from '../views/Contact.vue'
+import FAQ from '../views/FAQ.vue'
 
 const routes = [
   {
@@ -26,6 +27,10 @@ const routes = [
   {
     path: '/contact',
     component: Contact
+  },
+  {
+    path: '/faq',
+    component: FAQ
   },
   {
     path: '/about',
