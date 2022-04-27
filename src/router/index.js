@@ -13,23 +13,27 @@ import FAQ from '../views/FAQ.vue'
 const routes = [
   {
     path: '/home',
-    name: 'Home',
+    name: 'home',
     component: Home
   },
   {
     path: '/timetracker',
+    name: 'timetracker',
     component: TimeTracker
   },
   {
     path: '/profile',
+    name: 'profile',
     component: Profile
   },
   {
     path: '/contact',
+    name: 'contact',
     component: Contact
   },
   {
     path: '/faq',
+    name: 'faq',
     component: FAQ
   },
   {
