@@ -89,7 +89,10 @@ export default {
             return ;
         })
         .catch( error => {
-            console.log('register error')
+            let data = error.response;
+
+            console.log(data)
+            alert(data.data.message)
         })
         
       },
@@ -107,7 +110,7 @@ export default {
                 let data = response.data;
 
                 Cookies.set('employee_token',data.access_token);
-                
+                store.state.sidebar = true;
                 vm.$router.push({path:'/home'}); //redirect
             })
       },

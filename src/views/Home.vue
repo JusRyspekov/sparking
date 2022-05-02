@@ -1,5 +1,7 @@
 <template>
   <div>
+    <add-car-modal v-if="isAddCarModalOpen" @close="isAddCarModalOpen = false" @setCars="setCars"></add-car-modal>
+    <add-space-modal v-if="isAddSpaceModalOpen" @close="isAddSpaceModalOpen = false" @setParkingSpaces="setParkingSpaces"></add-space-modal>
     <div class="card-list">
       <div class="card-list-header">
         <div class="card-list-name">
@@ -7,41 +9,55 @@
         </div>
         <div class="card-list-add">
           Add my car
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg @click="openAddCarModel" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6605 0H29.3205C36.1205 0 40.0005 3.84 40.0005 10.66V29.34C40.0005 36.12 36.1405 40 29.3405 40H10.6605C3.84049 40 0.000488281 36.12 0.000488281 29.34V10.66C0.000488281 3.84 3.84049 0 10.6605 0ZM21.6405 21.66H27.3205C28.2405 21.64 28.9805 20.9 28.9805 19.98C28.9805 19.06 28.2405 18.32 27.3205 18.32H21.6405V12.68C21.6405 11.76 20.9005 11.02 19.9805 11.02C19.0605 11.02 18.3205 11.76 18.3205 12.68V18.32H12.6605C12.2205 18.32 11.8005 18.5 11.4805 18.8C11.1805 19.12 11.0005 19.538 11.0005 19.98C11.0005 20.9 11.7405 21.64 12.6605 21.66H18.3205V27.32C18.3205 28.24 19.0605 28.98 19.9805 28.98C20.9005 28.98 21.6405 28.24 21.6405 27.32V21.66Z" fill="#333333"/>
           </svg>
         </div>
       </div>
-      <div class="card-slider">
-        <div class="card-car card-car-activated">
-            <img src="/images/car.png" class="card-car-img">
-            <div class="card-car-name"> my car </div>
-            <div class="card-car-number">AAA00102</div>
-            <div class="card-car-status">Activated</div>
+      <div class="card-slider" style="min-height: 260px">
+        <div style="padding: 0 8px 0 8px;width: 14%;" v-for="car in cars">
+          <div v-if="car.is_active" class="card-car card-car-activated">
+              <img src="/images/car.png" class="card-car-img">
+              <div class="card-car-name">{{car.title}}</div>
+              <div class="card-car-number">{{car.plate}}</div>
+              <div class="card-car-status">Activated</div>
+          </div>
+          <div v-else class="card-car card-car-deactivated">
+              <img src="/images/car.png" class="card-car-img">
+              <div class="card-car-name">{{car.title}}</div>
+              <div class="card-car-number">{{car.plate}}</div>
+              <div class="card-car-status">Deactivated</div>
+          </div>
         </div>
-        <div class="card-car card-car-activated">
-            <img src="/images/car.png" class="card-car-img">
-            <div class="card-car-name"> Zhusan </div>
-            <div class="card-car-number">AAA00102</div>
-            <div class="card-car-status">Activated</div>
-        </div>
-        <div class="card-car card-car-deactivated">
-            <img src="/images/car.png" class="card-car-img">
-            <div class="card-car-name"> Leha</div>
-            <div class="card-car-number">AAA00102</div>
-            <div class="card-car-status">Deactivated</div>
-        </div>
-        <div class="card-car card-car-deactivated">
-            <img src="/images/car.png" class="card-car-img">
-            <div class="card-car-name"> Leha</div>
-            <div class="card-car-number">AAA00102</div>
-            <div class="card-car-status">Deactivated</div>
-        </div>
-        <div class="card-car">
-        </div>
-        <div class="card-car">
-        </div>
-        <div class="card-car">
+        <div class="default-cars">
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;">
+            <div class="card-car" style="background: #F8F8F8;">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -52,33 +68,49 @@
         </div>
         <div class="card-list-add">
           Add my space
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg @click="isAddSpaceModalOpen = true" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6605 0H29.3205C36.1205 0 40.0005 3.84 40.0005 10.66V29.34C40.0005 36.12 36.1405 40 29.3405 40H10.6605C3.84049 40 0.000488281 36.12 0.000488281 29.34V10.66C0.000488281 3.84 3.84049 0 10.6605 0ZM21.6405 21.66H27.3205C28.2405 21.64 28.9805 20.9 28.9805 19.98C28.9805 19.06 28.2405 18.32 27.3205 18.32H21.6405V12.68C21.6405 11.76 20.9005 11.02 19.9805 11.02C19.0605 11.02 18.3205 11.76 18.3205 12.68V18.32H12.6605C12.2205 18.32 11.8005 18.5 11.4805 18.8C11.1805 19.12 11.0005 19.538 11.0005 19.98C11.0005 20.9 11.7405 21.64 12.6605 21.66H18.3205V27.32C18.3205 28.24 19.0605 28.98 19.9805 28.98C20.9005 28.98 21.6405 28.24 21.6405 27.32V21.66Z" fill="#333333"/>
           </svg>
         </div>
       </div>
-      <div class="card-slider">
-        <div class="card-space" style="background: url('/images/space_1.png');">
-          <div class="card-space-number">A-05</div>
-          <div class="card-space-name">Green line</div>
-          <div class="card-space-status">EXPIRES</div>
-          <div class="card-space-date">24 дня - 03:23:56</div>
+      <div class="card-slider" style="min-height: 260px">
+        <div v-for="space in parkingSpaces" style="padding: 0 8px 0 8px;width: 14%;height:100%">
+          <div class="card-space" style="background: url('/images/space_1.png');">
+            <div class="card-space-number">{{space.parking_number}}</div>
+            <div class="card-space-name">{{space.parking_zone_title}}</div>
+            <div class="card-space-status">EXPIRES</div>
+            <div class="card-space-date">{{space.expires}}</div>
+          </div>
         </div>
-        <div class="card-space" style="background: url('/images/space_2.png');">
-          <div class="card-space-number">A-05</div>
-          <div class="card-space-name">Green line</div>
-          <div class="card-space-status">EXPIRES</div>
-          <div class="card-space-date">24 дня - 03:23:56</div>
-        </div>
-        <div class="card-space">
-        </div>
-        <div class="card-space">
-        </div>
-        <div class="card-space">
-        </div>
-        <div class="card-space">
-        </div>
-        <div class="card-space">
+        <div class="default-spaces">
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
+          <div style="padding: 0 8px 0 8px;width: 14%;height:100%">
+            <div class="card-space" style="background: #F8F8F8;">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -89,8 +121,65 @@
     </div>
   </div>
 </template>
+<script>
+import AddCarModal from '../components/AddCarModal.vue'
+import AddSpaceModal from '../components/AddSpaceModal.vue'
+
+export default {
+  data() {
+    return {
+      cars: null,
+      parkingSpaces: null,
+      isAddCarModalOpen: false,
+      isAddSpaceModalOpen: false,
+      
+    }
+  },
+  created() {
+    this.setCars();
+    this.setParkingSpaces();
+  },
+  methods: {
+    setCars() {
+      this.$api.get('personal/my-cars')
+      .then(response => {
+        this.cars = response.data;
+      })
+    },
+    setParkingSpaces() {
+      this.$api.get('personal/my-tickets')
+      .then(response => {
+        this.parkingSpaces = response.data
+      })
+    },
+    openAddCarModel() {
+      this.isAddCarModalOpen = true;
+    }
+  },
+  components: {
+    AddCarModal,
+    AddSpaceModal
+  }
+}
+</script>
 
 <style>
+  .default-cars{
+    position:absolute;
+    padding-bottom: 32px;
+    display:flex;
+    width: 100%;
+    z-index:-1;
+    height:100%;
+  }
+  .default-spaces{
+    position:absolute;
+    padding-bottom: 32px;
+    display:flex;
+    width: 100%;
+    z-index:-1;
+    height:100%;
+  }
   .advertising-slide-img{
     width:100%;
     height:271px;
@@ -133,10 +222,11 @@
     padding: 32px 0 32px 0;
     border-radius:8px;
     margin: 0 8px 0 8px;
-    width: 14%;
+    width: 100%;
     color: #FFFFFF;
     background: #F8F8F8;
     text-align:center;
+    height:260px;
   }
   .card-list{
     margin-bottom: 48px;
@@ -181,9 +271,8 @@
     padding: 32px 0 32px 0;
     border-radius:8px;
     background:#F8F8F8;
-    margin: 0 8px 0 8px;
-    width: 14%;
     text-align:center;
+    height: 100%;
   }
   .card-car-activated{
     background:#51A4F1;

@@ -8,11 +8,15 @@
                 <div style="position:absolute;bottom:102px;">
                     <span style="font-size:32px">Welcome to SmartParking!</span>
                     <label style="margin-top:48px">Email or phone number</label>
-                    <input type="text" name="email" id="email" placeholder="Email or phone number">
+                    <input type="text" name="email" id="email" placeholder="Email or phone number" required>
+                    <div style="color:red" id="error-email">
+                    </div>
                     <label>Password</label>
-                    <input type="password" name="password" id="password" placeholder="Password">
+                    <input type="password" name="password" id="password" placeholder="Password" min="8" required>
+                    <div style="color:red" id="error-password">
+                    </div>
                     <span style="display:block; font-style: normal; font-size: 14px; color: #666666;margin-bottom: 8px">Forgot your password?</span>
-                    <button class="btn btn-black"  v-on:click="login" style="width:390px;font-size:16px;margin-bottom:24px"><strong>Регистрация</strong></button>
+                    <button class="btn btn-black"  v-on:click="login" style="width:390px;font-size:16px;margin-bottom:24px"><strong>Login</strong></button>
                     <span id="reg-text">Do you have an account? 
                         <router-link to="/registration">
                             <strong style="color:black">Resgistration</strong>
@@ -40,6 +44,14 @@ export default {
         let email = document.getElementById('email')
         let password = document.getElementById('password')
 
+        // check validate
+        if(
+            !this.inputValidate('email') ||
+            !this.inputValidate('password') 
+        ) {
+            return;
+        }
+
         await this.$api.post('auth/login', {
             email: email.value,
             password: password.value
@@ -48,9 +60,28 @@ export default {
             let data = response.data;
 
             Cookies.set('employee_token',data.access_token);
-            
+            store.state.sidebar = true;
             vm.$router.push({path:'/home'}); //redirect
         })
+        .catch( error => {
+            let data = error.response;
+
+            alert(data.data.message)
+        })
+    },
+    inputValidate(id) {
+    const nameInput = document.querySelector('#' + id);
+    let errorDiv = document.getElementById("error-" + id);
+
+    if (!nameInput.checkValidity()) {
+        errorDiv.innerHTML = nameInput.validationMessage;
+        setTimeout(() => {
+            errorDiv.innerHTML = '';
+        }, 2000);
+
+        return false;
+    }
+    return true;
     },
   }
 }
