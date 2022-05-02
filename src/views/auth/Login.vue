@@ -8,12 +8,16 @@
                 <div style="position:absolute;bottom:102px;">
                     <span style="font-size:32px">Welcome to SmartParking!</span>
                     <label style="margin-top:48px">Email or phone number</label>
-                    <input type="text" name="email" placeholder="Email or phone number">
+                    <input type="text" name="email" id="email" placeholder="Email or phone number">
                     <label>Password</label>
-                    <input type="password" name="password" placeholder="Password">
+                    <input type="password" name="password" id="password" placeholder="Password">
                     <span style="display:block; font-style: normal; font-size: 14px; color: #666666;margin-bottom: 8px">Forgot your password?</span>
-                    <button class="btn btn-black" style="width:390px;font-size:16px;margin-bottom:24px"><strong>Регистрация</strong></button>
-                    <span id="reg-text">Do you have an account? <strong style="color:black">Resgistration</strong></span>
+                    <button class="btn btn-black"  v-on:click="login" style="width:390px;font-size:16px;margin-bottom:24px"><strong>Регистрация</strong></button>
+                    <span id="reg-text">Do you have an account? 
+                        <router-link to="/registration">
+                            <strong style="color:black">Resgistration</strong>
+                        </router-link>
+                    </span>
                 </div>
             </div>
         </div>
@@ -24,10 +28,30 @@
 </template>
 <script>
 import store from '@/store'
+import Cookies from "js-cookie";
 
 export default {
   beforeCreate() {
     store.state.sidebar = false
+  },
+  methods: {
+    async login() {
+        let vm = this;
+        let email = document.getElementById('email')
+        let password = document.getElementById('password')
+
+        await this.$api.post('auth/login', {
+            email: email.value,
+            password: password.value
+        })
+        .then( response => {
+            let data = response.data;
+
+            Cookies.set('employee_token',data.access_token);
+            
+            vm.$router.push({path:'/home'}); //redirect
+        })
+    },
   }
 }
 </script>

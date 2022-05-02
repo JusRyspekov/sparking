@@ -28,7 +28,11 @@
                     <div style="color:red" id="error-password">
                     </div>
                     <button class="btn btn-black" v-on:click="register" style="width:390px;font-size:16px;margin-bottom:24px"><strong>REGISTRATION</strong></button>
-                    <span id="auth-text">Do you have an account?  <strong style="color:black">Login</strong></span>
+                    <span id="auth-text">Do you have an account?
+                        <router-link to="/login">
+                            <strong style="color:black">Login</strong>
+                        </router-link>
+                    </span>
                 </div>
             </div>
         </div>
