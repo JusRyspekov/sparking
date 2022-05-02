@@ -8,15 +8,25 @@
                 <div>
                     <span style="font-size:32px">Welcome to SmartParking!</span>
                     <label style="margin-top:48px;">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Name">
+                    <input type="text" id="name" name="name" placeholder="Name" min="1" required>
+                    <div style="color:red" id="error-name">
+                    </div>
                     <label>Surname</label>
-                    <input type="text" id="lastname" name="lastname" placeholder="Surname">
+                    <input type="text" id="lastname" name="lastname" placeholder="Surname" required>
+                    <div style="color:red" id="error-lastname">
+                    </div>
                     <label>Email</label>
-                    <input type="text" name="email" id="email" placeholder="Email">
+                    <input type="text" name="email" id="email" placeholder="Email" required>
+                    <div style="color:red" id="error-email">
+                    </div>
                     <label>Number phone</label>
-                    <input type="text" name="number" id="number" placeholder="Number phone">
+                    <input type="text" name="number" id="number" placeholder="Number phone" max="11" required>
+                    <div style="color:red" id="error-number">
+                    </div>
                     <label>Password</label>
-                    <input type="password" name="password" id="password" placeholder="Password">
+                    <input type="password" name="password" id="password" placeholder="Password" min="5" required>
+                    <div style="color:red" id="error-password">
+                    </div>
                     <button class="btn btn-black" v-on:click="register" style="width:390px;font-size:16px;margin-bottom:24px"><strong>REGISTRATION</strong></button>
                     <span id="auth-text">Do you have an account?  <strong style="color:black">Login</strong></span>
                 </div>
@@ -29,32 +39,88 @@
 </template>
 <script>
 import store from '@/store'
+import Cookies from "js-cookie";
 
 export default {
   beforeCreate() {
     store.state.sidebar = false
     const instance = axios.create({baseURL: 'http://164.92.72.194:80/api/v1'})
   },
+  created() {
+    //   this.$log()
+  },
   methods: {
-      register() {
+      async register() {
+        let vm = this;
         let name = document.getElementById('name')
         let lastname = document.getElementById('lastname')
         let email = document.getElementById('email')
         let number = document.getElementById('number')
         let password = document.getElementById('password')
+
+        // check validate
+        if(
+            !this.inputValidate('name') ||
+            !this.inputValidate('lastname') ||
+            !this.inputValidate('email') ||
+            !this.inputValidate('number') ||
+            !this.inputValidate('password') 
+        ) {
+            return;
+        }
         
-        axios.post('http://164.92.72.194:80/api/v1/auth/register',{
-            firstName: name.value,
-            lastName: lastname.value,
+        await this.$api.post('auth/register',{
+            first_name: name.value,
+            last_name: lastname.value,
             email: email.value,
             phone: number.value,
             password: password.value
         })
         .then( response => {
             let data = response.data;
-            console.log(data)
+            vm.login(
+                data.email,
+                password.value
+            )
+            return ;
         })
-      }
+        .catch( error => {
+            console.log('register error')
+        })
+        
+      },
+      async login(
+        email,
+        password
+      ) {
+            let vm = this;
+          console.log('hello world')
+            await this.$api.post('auth/login', {
+                email: email,
+                password: password
+            })
+            .then( response => {
+                let data = response.data;
+
+                Cookies.set('employee_token',data.access_token);
+                
+                vm.$router.push({path:'/home'}); //redirect
+            })
+      },
+      inputValidate(id) {
+        const nameInput = document.querySelector('#' + id);
+        let errorDiv = document.getElementById("error-" + id);
+
+        if (!nameInput.checkValidity()) {
+            errorDiv.innerHTML = nameInput.validationMessage;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 2000);
+
+            return false;
+        }
+        return true;
+      },
   }
 }
 </script>
