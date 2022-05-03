@@ -93,7 +93,7 @@
                 zone: null,
                 filter_zone: null,
                 page: 0,
-                size: 2,
+                size: 8,
                 total_pages: 0
             }
         },
