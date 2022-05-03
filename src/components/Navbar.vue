@@ -6,17 +6,56 @@
             </span>
             Parking
         </strong>
+        <div
+            style="text-align:right;width:70%"
+            v-if="isAuth"
+            @click="logout"
+        >
+            logout
+            <svg width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1936 12.9732C10.6103 12.9732 10.1491 13.4265 10.1491 13.9998C10.1491 14.5598 10.6103 15.0265 11.1936 15.0265H19.3332V21.3998C19.3332 24.6665 16.6336 27.3332 13.2963 27.3332H6.68976C3.36612 27.3332 0.666504 24.6798 0.666504 21.4132V6.59984C0.666504 3.31984 3.37968 0.666504 6.70333 0.666504H13.3235C16.6336 0.666504 19.3332 3.31984 19.3332 6.5865V12.9732H11.1936ZM24.1734 9.38677L28.0668 13.2668C28.2668 13.4668 28.3734 13.7201 28.3734 14.0001C28.3734 14.2668 28.2668 14.5334 28.0668 14.7201L24.1734 18.6001C23.9734 18.8001 23.7068 18.9068 23.4534 18.9068C23.1868 18.9068 22.9201 18.8001 22.7201 18.6001C22.3201 18.2001 22.3201 17.5468 22.7201 17.1468L24.8534 15.0268H19.3334V12.9734H24.8534L22.7201 10.8534C22.3201 10.4534 22.3201 9.8001 22.7201 9.4001C23.1201 8.98677 23.7734 8.98677 24.1734 9.38677Z" fill="#333333"/>
+            </svg>
+
+        </div>
     </div>
 </template>
+<script>
+import Cookies from "js-cookie";
+
+export default {
+    data() {
+        return {
+            isAuth: false
+        }
+    },
+    created() {
+        this.checkAuth();
+    },
+    methods: {
+        checkAuth() {
+            if (Cookies.get("employee_token")) {
+                this.isAuth = true;
+            }
+        },
+        logout() {
+            let vm = this;
+            
+            Cookies.remove('employee_token');
+            vm.$router.push({path:'/login'}); //redirect
+        }
+    }
+}
+</script>
 <style>
     .navbar{
         display: flex;
         flex-wrap: wrap;
         padding: 40px 32px 10px 54px;
-    align-items: flex-end;
+        align-items: flex-end;
     }
     .logo-div{
         font-size: 32px;
         padding-right:53px;
+        width:30%
     }
 </style>

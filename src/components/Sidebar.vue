@@ -3,8 +3,8 @@
         <div class="sidebar">
             <div style="text-align:center;margin-bottom: 40px">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Oleksiy_Arestovych_%28cropped%29.jpg/274px-Oleksiy_Arestovych_%28cropped%29.jpg" class="sidebar-img">
-                <div class="profile-name">Арестович</div>
-                <div class="profile-email">arestovic@gmail.com</div>
+                <div class="profile-name">{{user_first_name}}</div>
+                <div class="profile-email">{{user_email}}</div>
             </div>
             <button class="btn btn-white" style="display:flex;margin-bottom:56px"><img src="/icons/fire.svg" style="margin-right:8px"> <span class="hot-text"><p> Buy a parking space</p></span></button>
             <router-link to="/home" v-on:click="setActivePage(pages.home)">
@@ -89,6 +89,8 @@
     </div>
 </template>
 <script>
+import Cookies from "js-cookie";
+
 export default {
     data() {
         return {
@@ -109,8 +111,13 @@ export default {
                 faq: {
                     isActive: false
                 }
-            }
+            },
+            user_first_name: null,
+            user_email: null
         }
+    },
+    created() {
+        this.setUserData();
     },
     methods: {
         setActivePage(page) {
@@ -119,6 +126,10 @@ export default {
             }
             page.class = 'active'
             console.log(this.$route.name)
+        },
+        setUserData() {
+            this.user_email = Cookies.get('user_email');
+            this.user_first_name = Cookies.get('user_first_name')
         }
     },
 }

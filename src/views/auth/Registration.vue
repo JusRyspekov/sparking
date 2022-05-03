@@ -109,7 +109,9 @@ export default {
             .then( response => {
                 let data = response.data;
 
-                Cookies.set('employee_token',data.access_token);
+                Cookies.set('employee_token',data.tokens.access_token);
+                Cookies.set('user_email',data.client.email)
+                Cookies.set('user_first_name',data.client.first_name)
                 store.state.sidebar = true;
                 vm.$router.push({path:'/home'}); //redirect
             })

@@ -57,7 +57,7 @@
                 </div>
             </div>
         </div>
-        <div style="width:100%;margin-bottom:16px;overflow: hidden;">
+        <!--<div style="width:100%;margin-bottom:16px;overflow: hidden;">
             <div class="float-left">
                 <strong class="profile-text">Saved bank cards</strong>
             </div>
@@ -71,7 +71,7 @@
         <div style="position:relative;width:372px">
             <img src="/images/card.png" class="card">
             <img src="/images/master_card.png" style="position:absolute;right:16px;top:24px;">
-        </div>
+        </div>-->
     </div>
 </template>
 <style scoped>

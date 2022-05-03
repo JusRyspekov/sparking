@@ -9,27 +9,40 @@ import TimeTracker from '../views/TimeTracker.vue'
 import Profile from '../views/Profile.vue'
 import Contact from '../views/Contact.vue'
 import FAQ from '../views/FAQ.vue'
+import Cookies from "js-cookie";
 
 const routes = [
   {
     path: '/home',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/timetracker',
     name: 'timetracker',
-    component: TimeTracker
+    component: TimeTracker,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/profile',
     name: 'profile',
-    component: Profile
+    component: Profile,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/contact',
     name: 'contact',
-    component: Contact
+    component: Contact,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/faq',
@@ -72,6 +85,18 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    if (Cookies.get("employee_token")) {
+      next()
+      return
+    }
+    next('/login') 
+  } else {
+    next() 
+  }
 })
 
 export default router
