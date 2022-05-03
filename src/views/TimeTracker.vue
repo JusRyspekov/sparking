@@ -5,50 +5,41 @@
                 Filter
             </div>
             <div class="float-right">
-                <select class="btn" style="padding-right:148px;color:#666666;margin-right:16px;background:#F2F2F2">
-                    <option>
+                <select class="btn" @change="filterEntries" id="selected_period" style="padding-right:148px;color:#666666;margin-right:16px;background:#F2F2F2">
+                    <option value="all">
                         Select time
                     </option>
-                    <option>
+                    <option value="day">
                         one day
                     </option>
-                    <option>
+                    <option value="week">
                         one week
                     </option>
-                    <option>
+                    <option value="manth">
                         one month
                     </option>
-                    <option>
-                        one year
-                    </option>
                 </select>
-                <select class="btn" style="padding-right:148px;color:#666666;background:#F2F2F2;">
-                    <option>
+                <select class="btn" @change="filterEntries" id="car" style="padding-right:148px;color:#666666;background:#F2F2F2;">
+                    <option value="">
                         Choose a car
                     </option>
-                    <option>
-                        Zhusan
-                    </option>
-                    <option>
-                        Leha
-                    </option>
-                    <option>
-                        My car
+                    <option v-for="car in cars" :value="car.id">
+                        {{car.title}}
                     </option>
                 </select>
             </div>
         </div><br>
         <div class="timetracker-content">
             <div id="car-list">
-                <div class="car-div" v-for="car in cars">
+                <div class="car-div" v-for="entry in entries">
                     <div class="car-name">
-                        {{car.name}}
+                        {{entry.car_title}}
                     </div>
                     <div class="car-time">
-                        {{car.time}} 
+                        {{entry.entry_time}} 
                     </div>
                     <div class="car-space">
-                        {{car.space}}
+                        {{entry.parking_zone_title}}
                     </div>
                     <div class="car-button">
                         <div>
@@ -64,39 +55,31 @@
                 </div>
                 <div style="text-align:center;padding-top:24px">
                     <div class="pagination">
-                        <button class="btn" style="padding-left:28px;padding-right:28px">
+                        <button class="btn" @click="prevPage" style="padding-left:28px;padding-right:28px">
                             Назад
                         </button>
-                        <button class="btn btn-transparent">
-                            1
+                        <button
+                            class="btn btn-transparent"
+                            v-for="page in total_pages"
+                            :key="page"
+                            @click="changePage(page)"
+                        >
+                            {{ page }}
                         </button>
-                        <button class="btn btn-transparent">
-                            2
-                        </button>
-                        <button class="btn btn-transparent">
-                            3
-                        </button>
-                        <button class="btn btn-transparent">
-                            ...
-                        </button>
-                        <button class="btn btn-transparent">
-                            14
-                        </button>
-                        <button class="btn btn-black" style="padding-left:28px;padding-right:28px">
+                        <button @click="nextPage" class="btn btn-black" style="padding-left:28px;padding-right:28px">
                             Далее
                         </button>
                     </div>
                 </div>
             </div>
-            <div id="space-list">
-                <div class="space-div" v-for="space in spaces">
-                    <img :src="space.img" class="space-img">
+            <!--<div id="space-list">
+                <div class="space-div" v-for="z in zone" @click="setFilterZone(z.id)">
+                    <img :src="'http://164.92.72.194:8080/images/' +z.image" class="space-img">
                     <div class="space-text">
-                        <div class="space-name">{{space.name}}</div>
-                        <div class="space-city">{{space.city}}</div>
+                        <div class="space-name">{{z.title}}</div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </template>
@@ -104,24 +87,97 @@
     export default {
         data() {
             return {
-                cars: [
-                    {id: 1, name:'My car', time: '12.23/07:20 PM ', space: 'Green Line'},
-                    {id: 2, name:'Milana', time: '12.23/07:20 PM ', space: 'Asyl Mura'},
-                    {id: 3, name:'Zhanat', time: '12.23/07:20 PM ', space: 'Asyl Mura'},
-                    {id: 4, name:'Milana', time: '12.23/07:20 PM ', space: 'Green Line'},
-                    {id: 5, name:'Alish', time: '12.23/07:20 PM ', space: 'Green Line'},
-                    {id: 6, name:'Leha', time: '12.23/07:20 PM ', space: 'Jazz Line'},
-                    {id: 8, name:'Nikita', time: '12.23/07:20 PM ', space: 'Jazz'},
-                    {id: 9, name:'Max', time: '12.23/07:20 PM ', space: 'Green Line'},
-                    {id: 10, name:'Lera', time: '12.23/07:20 PM ', space: 'Asyl Mura'}
-                ],
-                spaces: [
-                    {id:1, name: 'Green Line', city: 'Almaty', img: '/images/space_1.png'},
-                    {id:2, name: 'Jazz', city: 'Almaty', img: '/images/space_2.png'},
-                    {id:3, name: 'Asyl Mura', city: 'Almaty', img: '/images/space_1.png'},
-                    {id:4, name: 'Grandian', city: 'Nur-Sultan', img: '/images/space_2.png'},
-                ]
+                entries: null,
+                spaces: null,
+                cars: null,
+                zone: null,
+                filter_zone: null,
+                page: 0,
+                size: 2,
+                total_pages: 0
             }
+        },
+        created() {
+            this.setEntries();
+            this.setParkingZone();
+            this.setCars();
+        },
+        methods: {
+            setCars() {
+                let vm = this;
+                this.$api.get('personal/my-cars')
+                .then(response => {
+                    vm.cars = response.data;
+                })
+            },
+            changePage(page) {
+                this.page =  page - 1 
+                this.filterEntries();
+            },
+            nextPage() {
+                if( this.page != (this.total_pages - 1) ) {
+                    this.page = this.page + 1;
+                    this.filterEntries();
+                }
+            },
+            prevPage() {
+                console.log(this.page)
+                if( this.page != 0 ) {
+                    this.page = this.page - 1;
+                    this.filterEntries();
+                }
+            },
+            setEntries() {
+                let vm = this;
+                let period = document.getElementById('selected_period')
+                let car    = document.getElementById('car')
+
+                this.$api.get('personal/my-entry-history', {
+                    params: {
+                        size: this.size
+                    }
+                })
+                .then(response => {
+                    vm.entries = response.data.rows;
+                    vm.total_pages = Math.ceil(response.data.total / vm.size);
+                })
+            },
+            setFilterZone(id) {
+                this.filter_zone = id;
+
+                this.filterEntries();
+            },
+            filterEntries() {
+                let vm = this;
+                let period = document.getElementById('selected_period');
+                let car    = document.getElementById('car')
+                let params = {};
+                params.size = this.size;
+                params.page = this.page;
+
+                if( car.value != '' ) {
+                    params.car_id = car.value;
+                    params.page = 0;
+                }
+                if( this.filter_zone != null ) {
+                    params.parking_zone_id = this.filter_zone;
+                }
+
+                this.$api.get('personal/my-entry-history', {
+                    params: params
+                })
+                .then(response => {
+                    vm.entries = response.data.rows;
+                    vm.total_pages = Math.ceil(response.data.total / vm.size);
+                })
+            },
+            setParkingZone() {
+                let vm = this;
+                this.$api.get('parking-zone')
+                .then( response => {
+                    vm.zone = response.data;
+                })
+            },
         }
     }
 </script>
